@@ -10,13 +10,15 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Nunito+Sans:ital,wght@0,400;0,600;1,400&display=swap">
 <style>
 /* Layout : aligné à gauche, aéré, héro asymétrique (texte / photo haute à sommet en arche, comme les affiches du cabinet),
-   une seule bande pleine largeur couleur rose poudré (le mur de la salle) pour la spécialité périnéale, le reste sur blanc chaud. */
+   une seule bande pleine largeur rose poudré (le mur de la salle) pour la spécialité périnéale, le reste sur blanc chaud.
+   Une démonstration d'agenda en ligne et des options de maquette (panneau flottant) pour la relecture à deux. */
 :root{
   --bg:#FBF9F6;
   --bg-2:#F3EEE7;
   --fg:#2B2724;
   --muted:#6B625B;
   --rose:#DDB9AE;
+  --rose-soft:#F4E6E0;
   --rose-ink:#2B2724;
   --rose-deep:#A3655A;
   --oak:#C49E78;
@@ -24,17 +26,20 @@
   --font-display:'Jost','Avenir Next','Segoe UI',sans-serif;
   --font-body:'Nunito Sans','Segoe UI',Helvetica,Arial,sans-serif;
   --radius:4px;
+  --shadow:0 18px 40px -24px rgba(43,39,36,.35);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#1F1B19; --bg-2:#282321; --fg:#F0E9E2; --muted:#B3A79D;
-    --rose:#5E4139; --rose-ink:#F6ECE7; --rose-deep:#E3AC9D; --oak:#D4AE86; --line:#3B342F;
+    --rose:#5E4139; --rose-soft:#3A2C28; --rose-ink:#F6ECE7; --rose-deep:#E3AC9D; --oak:#D4AE86; --line:#3B342F;
+    --shadow:0 18px 40px -24px rgba(0,0,0,.8);
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#1F1B19; --bg-2:#282321; --fg:#F0E9E2; --muted:#B3A79D;
-  --rose:#5E4139; --rose-ink:#F6ECE7; --rose-deep:#E3AC9D; --oak:#D4AE86; --line:#3B342F;
+  --rose:#5E4139; --rose-soft:#3A2C28; --rose-ink:#F6ECE7; --rose-deep:#E3AC9D; --oak:#D4AE86; --line:#3B342F;
+  --shadow:0 18px 40px -24px rgba(0,0,0,.8);
   color-scheme:dark;
 }
 
@@ -48,7 +53,8 @@ body{
 }
 img{max-width:100%;display:block}
 a{color:var(--rose-deep)}
-a:focus-visible,button:focus-visible{outline:2px solid var(--rose-deep);outline-offset:3px}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{outline:2px solid var(--rose-deep);outline-offset:3px}
+button{font:inherit;color:inherit}
 
 h1,h2,h3{font-family:var(--font-display);font-weight:300;line-height:1.1;margin:0;text-wrap:balance;letter-spacing:-0.01em}
 h1{font-size:clamp(3rem,8vw,5.6rem)}
@@ -60,37 +66,50 @@ p{margin:0}
 section{padding-block:clamp(56px,8vw,104px)}
 .lead{font-size:1.15rem;max-width:34em;color:var(--muted)}
 .stack{display:flex;flex-direction:column;gap:1rem}
+.pill{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--font-display);font-size:.85rem;letter-spacing:.03em;padding:.3rem .75rem;border-radius:999px;background:var(--rose-soft);color:var(--rose-deep);align-self:flex-start}
 
 /* bandeau de maquette */
 .draft{background:var(--fg);color:var(--bg);font-size:.9rem;padding:.6rem 0}
 .draft .wrap{display:flex;gap:1rem;align-items:center;justify-content:space-between;flex-wrap:wrap}
-.draft button{background:transparent;border:1px solid currentColor;color:inherit;border-radius:999px;padding:.25rem .8rem;font:inherit;cursor:pointer}
+.draft button{background:transparent;border:1px solid currentColor;color:inherit;border-radius:999px;padding:.25rem .8rem;cursor:pointer}
 .check{display:inline-block;font-size:.72rem;line-height:1;padding:.25em .55em;margin-left:.35em;border:1px dashed var(--rose-deep);color:var(--rose-deep);border-radius:999px;vertical-align:middle;white-space:nowrap;font-family:var(--font-display);letter-spacing:.02em}
+body.no-check .check{display:none}
 
 /* en-tête */
 header.top{
-  position:sticky;top:env(safe-area-inset-top,0px);z-index:10;
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:20;
   background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);
   border-bottom:1px solid var(--line);
 }
 header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:68px}
-.brand{font-family:var(--font-display);font-weight:400;font-size:1.25rem;color:var(--fg);text-decoration:none;letter-spacing:.01em}
+.brand{display:flex;align-items:center;gap:.7rem;font-family:var(--font-display);font-weight:400;font-size:1.25rem;color:var(--fg);text-decoration:none;letter-spacing:.01em}
+.brand svg{width:22px;height:30px;flex:none}
 .brand small{display:block;font-size:.72rem;color:var(--muted);font-weight:300;letter-spacing:.06em;margin-top:-.15em}
 nav ul{list-style:none;margin:0;padding:0;display:flex;gap:1.6rem}
 nav a{color:var(--fg);text-decoration:none;font-size:.95rem}
 nav a:hover{color:var(--rose-deep)}
-@media (max-width:760px){ nav{display:none} }
+.menu-btn{display:none;background:transparent;border:1px solid var(--line);border-radius:var(--radius);padding:.5rem .8rem;cursor:pointer;font-family:var(--font-display)}
+@media (max-width:820px){
+  nav{display:none;position:absolute;left:0;right:0;top:100%;background:var(--bg);border-bottom:1px solid var(--line);padding:1rem clamp(16px,4vw,40px) 1.2rem}
+  nav.open{display:block}
+  nav ul{flex-direction:column;gap:.9rem}
+  .menu-btn{display:inline-block}
+  header.top .cta-top{display:none}
+}
 
 .btn{
-  display:inline-flex;align-items:center;gap:.5rem;
-  background:var(--fg);color:var(--bg);text-decoration:none;
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  background:var(--fg);color:var(--bg);text-decoration:none;cursor:pointer;
   font-family:var(--font-display);font-weight:400;font-size:1rem;letter-spacing:.02em;
   padding:.8rem 1.35rem;border-radius:var(--radius);border:1px solid var(--fg);
+  transition:background .2s,border-color .2s,color .2s;
 }
 .btn:hover{background:var(--rose-deep);border-color:var(--rose-deep);color:#fff}
 .btn.ghost{background:transparent;color:var(--fg)}
 .btn.ghost:hover{background:var(--fg);color:var(--bg)}
 .btn.small{padding:.55rem 1rem;font-size:.92rem}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn[disabled]:hover{background:var(--fg);border-color:var(--fg);color:var(--bg)}
 
 /* héro */
 .hero{padding-block:clamp(40px,6vw,88px)}
@@ -99,46 +118,109 @@ nav a:hover{color:var(--rose-deep)}
 .hero .sub{font-family:var(--font-display);font-weight:400;font-size:1.35rem;color:var(--rose-deep)}
 .hero .cta{display:flex;flex-wrap:wrap;gap:.9rem;align-items:center;margin-top:.4rem}
 .hero .phone{font-family:var(--font-display);font-size:1.3rem;color:var(--fg);text-decoration:none;font-variant-numeric:tabular-nums}
-.arch{aspect-ratio:3/4;max-width:100%;overflow:hidden;border-radius:999px 999px var(--radius) var(--radius);background:var(--bg-2)}
+.hero .facts{display:flex;flex-wrap:wrap;gap:.6rem 1.6rem;color:var(--muted);font-size:.95rem;padding-top:1.2rem;border-top:1px solid var(--line);margin-top:.6rem}
+.hero .facts span::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--oak);margin-right:.55rem;vertical-align:middle}
+.arch{aspect-ratio:3/4;max-width:100%;overflow:hidden;border-radius:999px 999px var(--radius) var(--radius);background:var(--bg-2);box-shadow:var(--shadow)}
 .arch img{width:100%;height:100%;object-fit:cover}
 @media (max-width:820px){
   .hero .wrap{grid-template-columns:1fr}
   .arch{max-width:420px;aspect-ratio:4/5}
 }
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+html.anim .hero .text > *{animation:rise .6s ease-out both}
+html.anim .hero .text > :nth-child(2){animation-delay:.08s}
+html.anim .hero .text > :nth-child(3){animation-delay:.16s}
+html.anim .hero .text > :nth-child(4){animation-delay:.24s}
+html.anim .hero .text > :nth-child(5){animation-delay:.32s}
+html.anim .hero .arch{animation:rise .8s ease-out both;animation-delay:.15s}
+@media (prefers-reduced-motion: reduce){ html.anim .hero .text > *, html.anim .hero .arch{animation:none} }
 
 /* soins */
 .soins .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,4vw,56px);margin-top:3rem}
 .soins .item{display:flex;flex-direction:column;gap:.8rem;min-width:0}
 .soins .item::before{content:"";display:block;width:44px;height:2px;background:var(--oak)}
 .soins .item p{color:var(--muted)}
+.soins .item ul{margin:.2rem 0 0;padding-left:1.1em;color:var(--muted);display:flex;flex-direction:column;gap:.25rem}
 @media (max-width:820px){ .soins .grid{grid-template-columns:1fr;gap:2.2rem} }
 
 /* bande rose */
 .perinee{background:var(--rose);color:var(--rose-ink)}
 .perinee .wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(32px,6vw,80px);align-items:center}
-.perinee .photo{overflow:hidden;border-radius:var(--radius);aspect-ratio:3/4;max-width:100%}
+.perinee .photo{overflow:hidden;border-radius:var(--radius);aspect-ratio:3/4;max-width:100%;box-shadow:var(--shadow)}
 .perinee .photo img{width:100%;height:100%;object-fit:cover}
 .perinee p{max-width:34em}
 .perinee ul{margin:.4rem 0 0;padding-left:1.1em;display:flex;flex-direction:column;gap:.35rem}
+.perinee .check{border-color:var(--rose-ink);color:var(--rose-ink);opacity:.75}
 @media (max-width:820px){
   .perinee .wrap{grid-template-columns:1fr}
   .perinee .photo{max-width:420px;order:2}
 }
 
-/* cabinets */
-.cabinets .wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(32px,6vw,80px);align-items:start}
-.cabinets .photo{overflow:hidden;border-radius:var(--radius);aspect-ratio:3/4;max-width:100%}
-.cabinets .photo img{width:100%;height:100%;object-fit:cover}
+/* déroulement */
+.deroulement ol{list-style:none;margin:3rem 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,4vw,56px);counter-reset:etape}
+.deroulement li{display:flex;flex-direction:column;gap:.6rem;min-width:0;counter-increment:etape}
+.deroulement li::before{content:counter(etape);font-family:var(--font-display);font-weight:300;font-size:3rem;line-height:1;color:var(--rose-deep)}
+.deroulement li p{color:var(--muted)}
+@media (max-width:820px){ .deroulement ol{grid-template-columns:1fr;gap:2.2rem} }
+
+/* cabinet */
+.cabinet .wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(32px,6vw,80px);align-items:start}
+.cabinet .photo{overflow:hidden;border-radius:var(--radius);aspect-ratio:3/4;max-width:100%;box-shadow:var(--shadow)}
+.cabinet .photo img{width:100%;height:100%;object-fit:cover}
+@media (max-width:820px){ .cabinet .photo{max-width:420px} }
 .lieux{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2.4rem}
 .lieu{display:flex;flex-direction:column;gap:.5rem;padding-top:1rem;border-top:1px solid var(--line);min-width:0}
 .lieu address{font-style:normal;color:var(--muted)}
 .lieu a{font-size:.95rem}
 .lieu .check{align-self:flex-start;margin-left:0}
-@media (max-width:820px){
-  .cabinets .wrap{grid-template-columns:1fr}
-  .cabinets .photo{max-width:420px}
-}
+@media (max-width:820px){ .cabinet .wrap{grid-template-columns:1fr} }
 @media (max-width:520px){ .lieux{grid-template-columns:1fr} }
+
+/* réservation en ligne (démonstration) */
+.reserver{background:var(--bg-2)}
+.reserver .intro{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,5vw,64px);align-items:end}
+.reserver .intro .stack{gap:1rem}
+.reserver .intro p{color:var(--muted)}
+@media (max-width:820px){ .reserver .intro{grid-template-columns:1fr} }
+.agenda{margin-top:2.4rem;background:var(--bg);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);overflow:hidden}
+.agenda .bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.3rem;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.agenda .bar .who{display:flex;align-items:center;gap:.8rem;font-family:var(--font-display)}
+.agenda .bar .who img{width:40px;height:40px;border-radius:50%;object-fit:cover;object-position:center 20%}
+.agenda .bar .who small{display:block;color:var(--muted);font-family:var(--font-body);font-size:.85rem}
+.agenda .body{display:grid;grid-template-columns:260px 1fr;min-height:420px}
+.agenda .side{padding:1.3rem;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:1.4rem}
+.agenda .side h4,.agenda .main h4{margin:0;font-family:var(--font-display);font-weight:400;font-size:1rem;color:var(--muted)}
+.motifs{display:flex;flex-direction:column;gap:.5rem}
+.motif{display:flex;justify-content:space-between;gap:.6rem;align-items:center;text-align:left;background:transparent;border:1px solid var(--line);border-radius:var(--radius);padding:.65rem .8rem;cursor:pointer;line-height:1.3}
+.motif small{color:var(--muted);white-space:nowrap}
+.motif[aria-pressed="true"]{border-color:var(--rose-deep);background:var(--rose-soft)}
+.agenda .main{padding:1.3rem;display:flex;flex-direction:column;gap:1.2rem;min-width:0}
+.days{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.3rem;scrollbar-width:thin}
+.day{flex:none;min-width:76px;display:flex;flex-direction:column;align-items:center;gap:.1rem;background:transparent;border:1px solid var(--line);border-radius:var(--radius);padding:.55rem .6rem;cursor:pointer;font-family:var(--font-display);line-height:1.2}
+.day b{font-weight:500;font-size:1.25rem}
+.day small{color:var(--muted);font-size:.8rem}
+.day[aria-pressed="true"]{border-color:var(--rose-deep);background:var(--rose-soft)}
+.day[disabled]{opacity:.4;cursor:not-allowed}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:.5rem}
+.slot{background:transparent;border:1px solid var(--line);border-radius:var(--radius);padding:.55rem .4rem;cursor:pointer;font-variant-numeric:tabular-nums;font-family:var(--font-display);font-size:1rem}
+.slot:hover{border-color:var(--rose-deep)}
+.slot[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.slot[disabled]{opacity:.35;cursor:not-allowed;text-decoration:line-through}
+.slot[disabled]:hover{border-color:var(--line)}
+.recap{margin-top:auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+.recap .txt{color:var(--muted)}
+.recap .txt strong{color:var(--fg);font-weight:600}
+.done{display:flex;flex-direction:column;gap:.6rem;padding:1.4rem;background:var(--rose-soft);border-radius:var(--radius)}
+.done h4{color:var(--fg)!important;font-size:1.3rem!important}
+.done p{color:var(--muted)}
+.done .btn{align-self:flex-start;margin-top:.4rem}
+.demo-note{color:var(--muted);font-size:.9rem;margin-top:1rem}
+@media (max-width:820px){
+  .agenda .body{grid-template-columns:1fr}
+  .agenda .side{border-right:0;border-bottom:1px solid var(--line)}
+  .motifs{flex-direction:row;flex-wrap:wrap}
+  .motif{flex:1 1 180px}
+}
 
 /* tarifs */
 .tarifs .wrap{display:grid;grid-template-columns:1fr 1.4fr;gap:clamp(32px,6vw,80px);align-items:start}
@@ -147,26 +229,35 @@ table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
 th,td{text-align:left;padding:.9rem .6rem;border-bottom:1px solid var(--line);vertical-align:top}
 th{font-family:var(--font-display);font-weight:400;color:var(--muted);font-size:.95rem}
 td:nth-child(2),th:nth-child(2){white-space:nowrap}
-td strong{font-weight:600}
+td strong{font-weight:600;transition:color .2s}
 td small,.note{display:block;color:var(--muted);font-size:.9rem}
 .note{margin-top:1rem}
+.switch{display:flex;align-items:center;gap:.8rem;margin-top:1.4rem;padding:1rem 1.1rem;background:var(--bg-2);border-radius:var(--radius);cursor:pointer;user-select:none}
+.switch input{appearance:none;width:42px;height:24px;border-radius:999px;background:var(--line);position:relative;margin:0;flex:none;cursor:pointer;transition:background .2s}
+.switch input::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--bg);transition:transform .2s;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+.switch input:checked{background:var(--rose-deep)}
+.switch input:checked::after{transform:translateX(18px)}
+.switch span{line-height:1.3}
+.switch small{display:block;color:var(--muted);font-size:.85rem}
 @media (max-width:820px){ .tarifs .wrap{grid-template-columns:1fr} }
 
-/* infos pratiques */
-.infos ol{margin:2.2rem 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:1.4rem 3rem;max-width:60em}
-.infos li{padding-top:1rem;border-top:1px solid var(--line);color:var(--muted)}
-.infos li strong{display:block;color:var(--fg);font-weight:600;margin-bottom:.2rem}
-@media (max-width:640px){ .infos ol{grid-template-columns:1fr} }
+/* questions */
+.faq .list{margin-top:2.4rem;max-width:62em;border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1.1rem 0;font-family:var(--font-display);font-size:1.15rem;font-weight:400}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-weight:300;font-size:1.6rem;color:var(--rose-deep);flex:none;transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{color:var(--muted);padding-bottom:1.2rem;max-width:40em}
 
 /* rendez-vous */
-.rdv{background:var(--bg-2)}
 .rdv .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(32px,6vw,80px);align-items:center}
 .rdv .big{font-family:var(--font-display);font-weight:300;font-size:clamp(2.2rem,6vw,3.6rem);color:var(--fg);text-decoration:none;letter-spacing:.01em;font-variant-numeric:tabular-nums;line-height:1.1}
 .rdv .big:hover{color:var(--rose-deep)}
 .rdv .moyens{display:flex;flex-direction:column;gap:1.1rem;margin-top:1.6rem}
 .rdv .moyen{display:flex;flex-direction:column;gap:.15rem;border-left:2px solid var(--oak);padding-left:1rem}
 .rdv .moyen span{color:var(--muted);font-size:.92rem}
-.rdv .portrait{overflow:hidden;border-radius:999px 999px var(--radius) var(--radius);aspect-ratio:4/5;max-width:380px;justify-self:end}
+.rdv .portrait{overflow:hidden;border-radius:999px 999px var(--radius) var(--radius);aspect-ratio:4/5;max-width:380px;justify-self:end;box-shadow:var(--shadow)}
 .rdv .portrait img{width:100%;height:100%;object-fit:cover;object-position:center 20%}
 @media (max-width:820px){
   .rdv .wrap{grid-template-columns:1fr}
@@ -176,28 +267,50 @@ td small,.note{display:block;color:var(--muted);font-size:.9rem}
 footer{border-top:1px solid var(--line);padding-block:2.2rem;color:var(--muted);font-size:.9rem}
 footer .wrap{display:flex;flex-wrap:wrap;gap:1rem 3rem;justify-content:space-between}
 footer p{max-width:46em}
+
+/* panneau d'options de la maquette */
+.opts{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;flex-direction:column;align-items:flex-end;gap:.6rem}
+.opts .toggle{background:var(--fg);color:var(--bg);border:0;border-radius:999px;padding:.7rem 1.1rem;cursor:pointer;font-family:var(--font-display);font-size:.95rem;box-shadow:var(--shadow);display:flex;align-items:center;gap:.5rem}
+.opts .panel{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:1rem 1.1rem;width:min(300px,calc(100vw - 32px));box-shadow:var(--shadow);display:flex;flex-direction:column;gap:.6rem}
+.opts .panel h4{margin:0 0 .2rem;font-family:var(--font-display);font-weight:400;font-size:1.05rem}
+.opts label{display:flex;align-items:center;gap:.6rem;font-size:.95rem;cursor:pointer}
+.opts input{accent-color:var(--rose-deep);width:16px;height:16px;margin:0}
+.opts .panel p{font-size:.82rem;color:var(--muted);margin-top:.3rem}
 </style>
+<script>
+(function(){
+  var on = true;
+  try { var s = JSON.parse(localStorage.getItem('maquette-lucie') || '{}') || {}; if (s.anim === false) on = false; } catch (e) {}
+  if (on) document.documentElement.classList.add('anim');
+})();
+</script>
 </head>
 <body>
 <div class="draft" id="draft">
   <div class="wrap">
-    <span>Maquette v1. Les mentions « à confirmer » sont à valider par Lucie avant la mise en ligne.</span>
+    <span>Maquette v2, réservée à la relecture. Les mentions « à confirmer » sont à valider par Lucie. L'agenda en ligne est une démonstration.</span>
     <button type="button" id="hide-draft">Masquer</button>
   </div>
 </div>
 
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#top">Lucie Delhaye<small>kinésithérapeute</small></a>
-    <nav aria-label="Sections du site">
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 22 30" aria-hidden="true"><path d="M1 29V12a10 10 0 0 1 20 0v17" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6 29V13a5 5 0 0 1 10 0v16" fill="var(--rose)" stroke="none"/></svg>
+      <span>Lucie Delhaye<small>kinésithérapeute</small></span>
+    </a>
+    <button class="menu-btn" type="button" id="menu-btn" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav id="nav" aria-label="Sections du site">
       <ul>
         <li><a href="#soins">Soins</a></li>
         <li><a href="#cabinet">Le cabinet</a></li>
+        <li data-section="reserver"><a href="#reserver">Réserver</a></li>
         <li><a href="#tarifs">Tarifs</a></li>
-        <li><a href="#infos">Infos pratiques</a></li>
+        <li data-section="faq"><a href="#questions">Questions</a></li>
+        <li><a href="#rendez-vous">Contact</a></li>
       </ul>
     </nav>
-    <a class="btn small" href="#rendez-vous">Prendre rendez-vous</a>
+    <a class="btn small cta-top" href="#rendez-vous">Prendre rendez-vous</a>
   </div>
 </header>
 
@@ -213,6 +326,11 @@ footer p{max-width:46em}
         <a class="btn" href="#rendez-vous">Prendre rendez-vous</a>
         <a class="phone" href="tel:+32476435054">0476 43 50 54</a>
       </div>
+      <div class="facts">
+        <span>Conventionnée INAMI</span>
+        <span>Cabinet et domicile</span>
+        <span>Rue Ernest Martel 19, Écaussinnes</span>
+      </div>
     </div>
     <div class="arch">
       <img src="img/salle-attente.jpg" alt="Coin d'attente du cabinet, avec le nom de Lucie Delhaye sur la vitre" width="900" height="1200">
@@ -226,15 +344,26 @@ footer p{max-width:46em}
     <div class="grid">
       <div class="item">
         <h3>Kinésithérapie générale</h3>
-        <p>Tous types de pathologies, à tout âge : douleurs de dos et de nuque, rééducation après une blessure ou une opération, entorses, tendinites, raideurs articulaires. <span class="check">exemples à confirmer</span></p>
+        <p>Tous types de pathologies, à tout âge. <span class="check">exemples à confirmer</span></p>
+        <ul>
+          <li>Douleurs de dos, de nuque et d'épaule</li>
+          <li>Rééducation après une blessure ou une opération</li>
+          <li>Entorses, tendinites, raideurs articulaires</li>
+          <li>Kinésithérapie respiratoire</li>
+        </ul>
       </div>
       <div class="item">
         <h3>Rééducation périnéale, pré et post-partum</h3>
-        <p>Préparation à l'accouchement, rééducation du périnée après la naissance, fuites urinaires, douleurs du bassin. Un suivi en douceur, adapté à chaque étape.</p>
+        <p>Un suivi en douceur, adapté à chaque étape de la grossesse et de l'après-naissance.</p>
+        <ul>
+          <li>Préparation à l'accouchement</li>
+          <li>Rééducation du périnée après la naissance</li>
+          <li>Fuites urinaires, pesanteur, douleurs du bassin</li>
+        </ul>
       </div>
       <div class="item">
         <h3>Séances à domicile</h3>
-        <p>Si vous ne pouvez pas vous déplacer, je viens chez vous, à Écaussinnes et dans les environs. <span class="check">zone à confirmer</span></p>
+        <p>Si vous ne pouvez pas vous déplacer, je viens chez vous, à Écaussinnes et dans les environs, avec le matériel nécessaire. <span class="check">zone à confirmer</span></p>
       </div>
     </div>
   </div>
@@ -248,9 +377,10 @@ footer p{max-width:46em}
     <div class="stack">
       <h2>Un accompagnement pour les futures et jeunes mamans</h2>
       <p>Depuis quatre ans, la rééducation périnéale et le suivi pré et post-partum sont au cœur de ma pratique. Je continue à me former dans ce domaine afin de vous garantir la meilleure prise en charge possible.</p>
+      <p>La rééducation du périnée commence en général six à huit semaines après l'accouchement, sur prescription de votre gynécologue ou de votre médecin. Elle est remboursée par la mutualité. <span class="check">à confirmer</span></p>
       <ul>
-        <li>Préparation à l'accouchement</li>
-        <li>Rééducation du périnée après la naissance</li>
+        <li>Préparation à l'accouchement et conseils pour la grossesse</li>
+        <li>Rééducation du périnée et de la sangle abdominale</li>
         <li>Fuites urinaires, pesanteur, douleurs du bassin</li>
         <li>Reprise du sport après la grossesse <span class="check">à confirmer</span></li>
       </ul>
@@ -259,7 +389,27 @@ footer p{max-width:46em}
   </div>
 </section>
 
-<section class="cabinets" id="cabinet">
+<section class="deroulement" id="deroulement" data-opt="deroulement">
+  <div class="wrap">
+    <h2>Comment se passe une première séance</h2>
+    <ol>
+      <li>
+        <h3>Le bilan</h3>
+        <p>On prend le temps de parler de vos douleurs, de votre quotidien et de vos objectifs, puis j'examine la zone concernée. <span class="check">à confirmer</span></p>
+      </li>
+      <li>
+        <h3>Le traitement</h3>
+        <p>Thérapie manuelle, exercices, mobilisations : le traitement est adapté à votre situation et évolue au fil des séances.</p>
+      </li>
+      <li>
+        <h3>Les exercices à la maison</h3>
+        <p>Vous repartez avec quelques exercices simples pour prolonger les effets de la séance entre deux rendez-vous.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="cabinet" id="cabinet">
   <div class="wrap">
     <div class="photo">
       <img src="img/cabinet-table.jpg" alt="Salle de soins, lumineuse, avec table de traitement" width="900" height="1200">
@@ -283,11 +433,60 @@ footer p{max-width:46em}
   </div>
 </section>
 
+<section class="reserver" id="reserver" data-opt="reserver">
+  <div class="wrap">
+    <div class="intro">
+      <div class="stack">
+        <span class="pill">Démonstration</span>
+        <h2>Réserver en ligne, à toute heure</h2>
+      </div>
+      <p>Voici à quoi ressemblerait la prise de rendez-vous sur le site avec un agenda en ligne comme Rosa : vous choisissez le motif, le jour et l'heure, et vous recevez une confirmation par e-mail puis un rappel la veille. Les créneaux affichés ici sont fictifs.</p>
+    </div>
+
+    <div class="agenda" id="agenda">
+      <div class="bar">
+        <div class="who">
+          <img src="img/lucie-portrait.jpg" alt="" width="40" height="40">
+          <div>Lucie Delhaye<small>Kinésithérapeute, Écaussinnes</small></div>
+        </div>
+        <span class="pill">Créneaux fictifs</span>
+      </div>
+      <div class="body">
+        <div class="side">
+          <div class="stack">
+            <h4>Motif</h4>
+            <div class="motifs" id="motifs"></div>
+          </div>
+        </div>
+        <div class="main" id="agenda-main">
+          <div class="stack" style="gap:.8rem">
+            <h4>Jour</h4>
+            <div class="days" id="days"></div>
+          </div>
+          <div class="stack" style="gap:.8rem">
+            <h4 id="slots-title">Heure</h4>
+            <div class="slots" id="slots"></div>
+          </div>
+          <div class="recap" id="recap">
+            <div class="txt" id="recap-txt">Choisissez un jour et une heure.</div>
+            <button class="btn" type="button" id="confirm" disabled>Confirmer le rendez-vous</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="demo-note">Démonstration uniquement : aucun rendez-vous n'est enregistré. En attendant l'agenda en ligne, le rendez-vous se prend par téléphone au 0476 43 50 54.</p>
+  </div>
+</section>
+
 <section class="tarifs" id="tarifs">
   <div class="wrap">
     <div class="stack">
       <h2>Tarifs et remboursement</h2>
       <p class="lead">Je suis kinésithérapeute conventionnée : j'applique les tarifs officiels de l'INAMI. Avec une prescription de votre médecin, vous ne payez que le ticket modérateur, le reste est pris en charge par votre mutualité.</p>
+      <label class="switch" for="bim">
+        <input type="checkbox" id="bim">
+        <span>Je bénéficie de l'intervention majorée<small>Statut BIM, indiqué sur votre vignette de mutualité</small></span>
+      </label>
     </div>
     <div class="table-wrap">
       <table>
@@ -298,34 +497,54 @@ footer p{max-width:46em}
           <tr>
             <td>Séance au cabinet<small>30 minutes</small></td>
             <td>31,64 €</td>
-            <td><strong>6,25 €</strong><small>2,50 € avec l'intervention majorée</small></td>
+            <td><strong data-std="6,25 €" data-bim="2,50 €">6,25 €</strong><small>par séance, prescription requise</small></td>
           </tr>
           <tr>
             <td>Séance à domicile<small>si vous ne pouvez pas vous déplacer</small></td>
             <td>34,81 €</td>
-            <td><strong>6,25 €</strong><small>plus 1,19 € de déplacement, non remboursés</small></td>
+            <td><strong data-std="6,25 €" data-bim="2,50 €">6,25 €</strong><small>plus 1,19 € de déplacement, non remboursés</small></td>
           </tr>
           <tr>
             <td>Pathologie lourde<small>liste E</small></td>
             <td>31,64 €</td>
-            <td><strong>3,88 €</strong><small>1,38 € avec l'intervention majorée</small></td>
+            <td><strong data-std="3,88 €" data-bim="1,38 €">3,88 €</strong><small>intervention plus élevée de la mutualité</small></td>
           </tr>
         </tbody>
       </table>
-      <p class="note">Tarifs INAMI en vigueur depuis le 1er janvier 2026. Sans prescription, la séance n'est pas remboursée.</p>
+      <p class="note">Tarifs INAMI en vigueur depuis le 1er janvier 2026. En pathologie courante, 18 séances par affection sont remboursées à ce tarif. Sans prescription, la séance n'est pas remboursée.</p>
     </div>
   </div>
 </section>
 
-<section class="infos" id="infos">
+<section class="faq" id="questions" data-opt="faq">
   <div class="wrap">
-    <h2>Avant votre première séance</h2>
-    <ol>
-      <li><strong>Une prescription médicale</strong>Délivrée par votre médecin généraliste ou spécialiste. Elle est indispensable pour le remboursement par la mutualité.</li>
-      <li><strong>Vos documents</strong>Votre prescription, votre carte d'identité et une vignette de mutualité.</li>
-      <li><strong>Une tenue souple</strong>Des vêtements confortables qui laissent la zone à traiter accessible.</li>
-      <li><strong>Le paiement</strong>En espèces ou par Bancontact à la fin de la séance. <span class="check">moyens de paiement à confirmer</span></li>
-    </ol>
+    <h2>Questions fréquentes</h2>
+    <div class="list">
+      <details>
+        <summary>Faut-il une prescription pour venir ?</summary>
+        <p>Pour être remboursé par la mutualité, oui : une prescription de votre médecin généraliste ou spécialiste. Vous pouvez aussi consulter sans prescription, mais la séance est alors entièrement à votre charge.</p>
+      </details>
+      <details>
+        <summary>Que dois-je apporter à la première séance ?</summary>
+        <p>Votre prescription, votre carte d'identité et une vignette de mutualité. Si vous en avez, les résultats d'imagerie ou le rapport de votre médecin sont utiles.</p>
+      </details>
+      <details>
+        <summary>Combien de temps dure une séance ?</summary>
+        <p>Une séance ordinaire dure 30 minutes. La première séance peut être un peu plus longue, le temps du bilan. <span class="check">à confirmer</span></p>
+      </details>
+      <details>
+        <summary>Comment payer ?</summary>
+        <p>En espèces ou par Bancontact à la fin de la séance. Vous recevez l'attestation pour votre mutualité. <span class="check">à confirmer</span></p>
+      </details>
+      <details>
+        <summary>Que faire si je dois annuler ?</summary>
+        <p>Prévenez-moi dès que possible par téléphone ou SMS, idéalement 24 heures à l'avance, pour que le créneau puisse profiter à une autre personne. <span class="check">à confirmer</span></p>
+      </details>
+      <details>
+        <summary>Puis-je venir avec mon bébé ?</summary>
+        <p>Oui. Le cabinet est pensé pour les jeunes mamans et votre bébé est le bienvenu pendant la séance. <span class="check">à confirmer</span></p>
+      </details>
+    </div>
   </div>
 </section>
 
@@ -344,8 +563,8 @@ footer p{max-width:46em}
           <a href="https://www.facebook.com/profile.php?id=100092541997438" target="_blank" rel="noopener">Lucie Delhaye, kinésithérapeute</a>
           <span>Sur Facebook, en message privé</span>
         </div>
-        <div class="moyen">
-          <a class="btn small" href="#rendez-vous" style="align-self:flex-start">Réserver en ligne</a>
+        <div class="moyen" data-opt="reserver">
+          <a href="#reserver">Réserver en ligne</a>
           <span>Agenda en ligne, disponible prochainement <span class="check">lien Rosa à venir</span></span>
         </div>
       </div>
@@ -365,10 +584,182 @@ footer p{max-width:46em}
   </div>
 </footer>
 
+<div class="opts" id="opts">
+  <div class="panel" id="opts-panel" hidden>
+    <h4>Options de la maquette</h4>
+    <label><input type="checkbox" data-key="draft" checked> Bandeau de relecture</label>
+    <label><input type="checkbox" data-key="check" checked> Étiquettes « à confirmer »</label>
+    <label><input type="checkbox" data-key="reserver" checked> Agenda en ligne (démonstration)</label>
+    <label><input type="checkbox" data-key="deroulement" checked> Déroulement d'une séance</label>
+    <label><input type="checkbox" data-key="faq" checked> Questions fréquentes</label>
+    <label><input type="checkbox" data-key="anim" checked> Animation d'ouverture</label>
+    <p>Ces réglages servent à comparer des variantes pendant la relecture. Ils ne font pas partie du site final.</p>
+  </div>
+  <button class="toggle" type="button" id="opts-btn" aria-expanded="false" aria-controls="opts-panel">
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h8M12 4h2M2 12h2M6 12h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="11" cy="4" r="1.8" fill="currentColor"/><circle cx="5" cy="12" r="1.8" fill="currentColor"/></svg>
+    Maquette
+  </button>
+</div>
+
 <script>
+(function(){
+  /* bandeau */
   document.getElementById('hide-draft').addEventListener('click', function(){
     document.getElementById('draft').hidden = true;
   });
+
+  /* menu mobile */
+  var menuBtn = document.getElementById('menu-btn'), nav = document.getElementById('nav');
+  menuBtn.addEventListener('click', function(){
+    var open = nav.classList.toggle('open');
+    menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  nav.addEventListener('click', function(e){
+    if (e.target.tagName === 'A') { nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false'); }
+  });
+
+  /* tarifs : intervention majorée */
+  document.getElementById('bim').addEventListener('change', function(){
+    var bim = this.checked;
+    document.querySelectorAll('[data-std]').forEach(function(el){
+      el.textContent = bim ? el.getAttribute('data-bim') : el.getAttribute('data-std');
+      el.style.color = bim ? 'var(--rose-deep)' : '';
+    });
+  });
+
+  /* options de la maquette */
+  var store = {};
+  try { store = JSON.parse(localStorage.getItem('maquette-lucie') || '{}') || {}; } catch (e) { store = {}; }
+  function save(){ try { localStorage.setItem('maquette-lucie', JSON.stringify(store)); } catch (e) {} }
+  function apply(key, on){
+    if (key === 'draft') { document.getElementById('draft').hidden = !on; return; }
+    if (key === 'check') { document.body.classList.toggle('no-check', !on); return; }
+    if (key === 'anim') { document.documentElement.classList.toggle('anim', on); return; }
+    document.querySelectorAll('[data-opt="' + key + '"]').forEach(function(el){ el.hidden = !on; });
+    document.querySelectorAll('nav [data-section="' + key + '"]').forEach(function(el){ el.hidden = !on; });
+  }
+  var boxes = document.querySelectorAll('#opts-panel input[data-key]');
+  boxes.forEach(function(box){
+    var key = box.getAttribute('data-key');
+    var on = (key in store) ? !!store[key] : box.checked;
+    box.checked = on;
+    apply(key, on);
+    box.addEventListener('change', function(){ store[key] = box.checked; save(); apply(key, box.checked); });
+  });
+  var optsBtn = document.getElementById('opts-btn'), optsPanel = document.getElementById('opts-panel');
+  optsBtn.addEventListener('click', function(){
+    optsPanel.hidden = !optsPanel.hidden;
+    optsBtn.setAttribute('aria-expanded', optsPanel.hidden ? 'false' : 'true');
+  });
+
+  /* agenda de démonstration */
+  var motifs = [
+    { id: 'kine', label: 'Séance de kinésithérapie', dur: 30 },
+    { id: 'perinee', label: 'Rééducation périnéale', dur: 30 },
+    { id: 'bilan', label: 'Première consultation avec bilan', dur: 45 }
+  ];
+  var jours = ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'];
+  var joursLong = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+  var mois = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+  var moisLong = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+
+  var days = [];
+  var d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() + 1);
+  while (days.length < 10) {
+    var wd = d.getDay();
+    if (wd >= 1 && wd <= 5) days.push(new Date(d));
+    d.setDate(d.getDate() + 1);
+  }
+  var times = [];
+  for (var h = 8; h <= 17; h++) {
+    for (var m = 0; m < 60; m += 30) {
+      if (h === 8 && m === 0) continue;
+      if (h === 12 && m === 30) continue;
+      if (h === 13 && m === 0) continue;
+      times.push([h, m]);
+    }
+  }
+  function busy(di, ti){
+    var x = (di * 7919 + ti * 104729 + 13) % 97;
+    return x % 3 === 0 || (days[di].getDay() === 3 && times[ti][0] >= 13);
+  }
+  function fmtTime(t){ return t[0] + ':' + (t[1] < 10 ? '0' + t[1] : t[1]); }
+
+  var state = { motif: 0, day: 0, slot: null };
+  var motifsEl = document.getElementById('motifs'), daysEl = document.getElementById('days'), slotsEl = document.getElementById('slots');
+  var recapTxt = document.getElementById('recap-txt'), confirmBtn = document.getElementById('confirm'), mainEl = document.getElementById('agenda-main');
+  var mainHTML = mainEl.innerHTML;
+
+  function renderMotifs(){
+    motifsEl.innerHTML = '';
+    motifs.forEach(function(mo, i){
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'motif';
+      b.setAttribute('aria-pressed', i === state.motif ? 'true' : 'false');
+      b.innerHTML = '<span>' + mo.label + '</span><small>' + mo.dur + ' min</small>';
+      b.addEventListener('click', function(){ state.motif = i; state.slot = null; renderMotifs(); renderSlots(); });
+      motifsEl.appendChild(b);
+    });
+  }
+  function renderDays(){
+    daysEl.innerHTML = '';
+    days.forEach(function(dt, i){
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'day';
+      b.setAttribute('aria-pressed', i === state.day ? 'true' : 'false');
+      b.innerHTML = '<small>' + jours[dt.getDay()] + '</small><b>' + dt.getDate() + '</b><small>' + mois[dt.getMonth()] + '</small>';
+      b.addEventListener('click', function(){ state.day = i; state.slot = null; renderDays(); renderSlots(); });
+      daysEl.appendChild(b);
+    });
+  }
+  function renderSlots(){
+    slotsEl.innerHTML = '';
+    var dt = days[state.day];
+    document.getElementById('slots-title').textContent = 'Heure, ' + joursLong[dt.getDay()] + ' ' + dt.getDate() + ' ' + moisLong[dt.getMonth()];
+    times.forEach(function(t, i){
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'slot'; b.textContent = fmtTime(t);
+      if (busy(state.day, i)) { b.disabled = true; }
+      else {
+        b.setAttribute('aria-pressed', state.slot === i ? 'true' : 'false');
+        b.addEventListener('click', function(){ state.slot = i; renderSlots(); });
+      }
+      slotsEl.appendChild(b);
+    });
+    renderRecap();
+  }
+  function renderRecap(){
+    if (state.slot === null) {
+      recapTxt.textContent = 'Choisissez un jour et une heure.';
+      confirmBtn.disabled = true;
+      return;
+    }
+    var dt = days[state.day], mo = motifs[state.motif];
+    recapTxt.innerHTML = '<strong>' + mo.label + '</strong>, ' + joursLong[dt.getDay()] + ' ' + dt.getDate() + ' ' + moisLong[dt.getMonth()] + ' à ' + fmtTime(times[state.slot]) + ' (' + mo.dur + ' min)';
+    confirmBtn.disabled = false;
+  }
+  function bind(){
+    motifsEl = document.getElementById('motifs'); daysEl = document.getElementById('days'); slotsEl = document.getElementById('slots');
+    recapTxt = document.getElementById('recap-txt'); confirmBtn = document.getElementById('confirm');
+    confirmBtn.addEventListener('click', function(){
+      var dt = days[state.day], mo = motifs[state.motif];
+      var done = document.createElement('div');
+      done.className = 'done';
+      done.innerHTML = '<h4>Rendez-vous demandé</h4>' +
+        '<p><strong>' + mo.label + '</strong>, ' + joursLong[dt.getDay()] + ' ' + dt.getDate() + ' ' + moisLong[dt.getMonth()] + ' à ' + fmtTime(times[state.slot]) + ', rue Ernest Martel 19 à Écaussinnes.</p>' +
+        '<p>Avec un agenda en ligne, vous recevriez maintenant une confirmation par e-mail, puis un rappel la veille. Ceci est une démonstration : rien n\'a été enregistré.</p>' +
+        '<button class="btn ghost" type="button" id="again">Choisir un autre créneau</button>';
+      mainEl.innerHTML = '';
+      mainEl.appendChild(done);
+      document.getElementById('again').addEventListener('click', function(){
+        state.slot = null;
+        mainEl.innerHTML = mainHTML;
+        bind(); renderDays(); renderSlots();
+      });
+    });
+  }
+  renderMotifs(); bind(); renderDays(); renderSlots();
+})();
 </script>
 </body>
 </html>
